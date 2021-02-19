@@ -1,7 +1,7 @@
-const criaNovaLinha = (nome , email) => {
+const criaNovaLinha = (nome, email) => {
     const linhaNovoCliente = document.createElement('tr');
-    const conteudo = 
-    `
+    const conteudo =
+        `
     <td class="td" data-td>${nome}</td>
     <td>${email}</td>
     <td>
@@ -13,8 +13,8 @@ const criaNovaLinha = (nome , email) => {
     
     `
 
-linhaNovoCliente.innerHTML = conteudo
-return linhaNovoCliente
+    linhaNovoCliente.innerHTML = conteudo
+    return linhaNovoCliente
 
 }
 
@@ -23,14 +23,28 @@ const tabela = document.querySelector('[data-tabela]')
 
 
 
+const listaClientes = () => {
+    const promise = new Promise((resolve, reject) => {
+        const http = new XMLHttpRequest()
 
-const http = new XMLHttpRequest()
+        http.open('GET', 'http://localhost:3000/profile')
+        http.send()
+        http.onload = () => {
+            if (http.status >= 400) {
+                reject(JSON.parse(http.response))
+            } else {
+                resolve(JSON.parse(http.response))
+            }
+        }
+    })
 
-http.open('GET', 'http://localhost:3000/profile')
-http.send()
-http.onload = () => {
-    const data = JSON.parse(http.response)
-    data.forEach(element => {
-        tabela.appendChild(criaNovaLinha(element.nome,element.email))
-    });
+    console.log(promise)
+    return promise
 }
+
+listaClientes()
+.then( data => {
+    data.forEach(element => {
+        tabela.appendChild(criaNovaLinha(element.nome , element.email))
+    })
+})
